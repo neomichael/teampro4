@@ -20,8 +20,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale? _locale;
-  // Locale _locale = Locale('zh', 'TW');
-
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -31,31 +29,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // title: 'Menu Photography App',
-      // theme: ThemeData(
-      //   primarySwatch: Colors.blue,
-      // ),
       locale: _locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,      
-      // localizationsDelegates: [
-      //   AppLocalizations.delegate,
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate,
-      //   GlobalCupertinoLocalizations.delegate,
-      // ],
-      // supportedLocales: [
-      //   Locale('en', ''),
-      //   Locale('zh', 'TW'),
-      //   Locale('zh', 'CN'),
-      //   Locale('ja', ''),
-      //   Locale('ko', ''),
-      //   Locale('zh', ''),
-      // ],
       home: EntrancePage(),
-      // routes: {
-      //   '/camera': (context) => PhotoTakingScreen(),
-      // },
     );
   }
 }
