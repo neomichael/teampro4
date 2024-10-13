@@ -1,0 +1,106 @@
+''' Foodi development memo.
+This memo is for the development of the Foodie app, which is a food delivery app that connects users with local restaurants and delivery services. The memo outlines the key features, technologies, and considerations for the app's development.
+
+The main goal of this app is to provide users with a convenient way to order food from their favorite restaurants and have it delivered to their doorstep. The app should be helpful for ingredients, recipes, bevarge and wine recommanation. The app should also provide users with a variety of options for ordering food, including inforamiton of the cooking skill, pictures of the food. The app should be easy to use and navigate, with a clean and intuitive user interface. The app only created for few pages, which is the front page, and camera phone taken picture page. The app should be support more function in the near future.(Not fully developed yet)
+
+Thy are several files needs to modify and create for this project. Files listed in below should be considered as major files. Other than that. I keep no change as flutter project created.
+
+1.root directory of project/teampro4. pubspec.yaml as it is, with image_gallery_saver included:
+dependencies:
+  flutter:
+    sdk: flutter
+  image_picker: ^0.8.7
+  image_gallery_saver: ^2.0.3
+  # Other dependencies you might have
+2.In android/build.gradle, update Gradle and Kotlin versions:
+    buildscript {
+        ext.kotlin_version = '1.7.10'
+        repositories {
+            google()
+            mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+3. In your main app's android/app/build.gradle, ensure these settings:
+    android {
+        compileSdkVersion 33
+        
+        defaultConfig {
+            minSdkVersion 21
+            targetSdkVersion 33
+        }
+    
+        lintOptions {
+            disable 'InvalidPackage'
+            checkReleaseBuilds false
+        }
+}
+4.there's a gradle.properties file in the same directory, open it and add:
+    android.useAndroidX=true
+    android.enableJetifier=true
+    
+5.Locate the image_gallery_saver plugin directory. It should be at:
+    C:\Users\<YourUsername>\AppData\Local\Pub\Cache\hosted\pub.dev\image_gallery_saver-<version>\android
+    The above description supprots for windows 11 environment.
+    
+    In this directory, open the build.gradle file and modify it as follows:
+        android {
+            compileSdkVersion 33
+            
+            defaultConfig {
+                minSdkVersion 16
+                targetSdkVersion 33
+            }
+        }
+6.Therefore, three build.gradles, gradle.properties, setting.gradle, main.dart in lib,
+  also been updated. New file in root like image_gallery_saver.gradle need to be created. language pack.
+
+6.Create multi-language 
+  create new directory under lib called l10n
+  create how many files you want to support.
+  app_en.arb for English, app_ja.arb for Japanese...
+  There are 6 languages to be supported at the front page of APP.
+
+7.create l10n.yaml file in the root directory.
+  arb-dir: lib/l10n
+  template-arb-file: app_en.arb
+  output-localization-file: app_localizations.dart
+  preferred-supported-locales: [en, zh, zh_TW, zh_CN, ja, ko]
+
+How to generate release version APK.
+  flutter clean
+  flutter pub get
+  flutter gen-l10n
+  flutter build apk --release
+
+How to isntall the APK
+
+1.Locate the APK file:
+  The release APK is typically located at:
+  C:\teamproject\flutter_proejcts\teampro4\build\app\outputs\flutter-apk\app-release.apk
+  C:\teamproject\flutter_proejcts\teampro4\build\app\outputs\apk\release\app-release.apk
+2.Prepare the email:
+  Open your email client or web browser to compose a new email.
+  Address it to your friend.
+  Write a message explaining what the app is and how to install it.
+3.Attach the APK: (below step 3 may not work it's up to browser)
+  Click on the "Attach" or "Add attachment" button in your email client.
+  Navigate to the location of your APK file and select it.
+  Alternatively, you can drag and drop the APK file into the email composition window in most email clients.
+4.Transfer the APK by usb connection. All the way from host pc to handset.
+
+Important notes to include in your email:
+1. Instruct your friend to download the APK to their Android device.
+2. They may need to enable "Install from unknown sources" in their device settings to install the app.
+3. To install, they should tap on the downloaded APK file and follow the prompts.
+
+If the APK file is too large for email (many email services have attachment size limits), you can use alternative methods:
+1. Upload the APK to a cloud storage service like Google Drive or Dropbox, then share the download link in your email.
+2. Use a file-sharing service like WeTransfer or Firefox Send to upload the APK and generate a download link to include in your email.
+
+Remember, this method of distribution is suitable for personal sharing or testing. For wider distribution, consider publishing your app on the Google Play Store.
+'''

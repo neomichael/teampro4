@@ -1,0 +1,16 @@
+{
+    "menuPhotography": "Menu Photography",
+    "selectLanguage": "Select Language",
+    "enterName": "Enter your name",
+    "notPreferred": "Not preferred ingredients",
+    "register": "Register",
+    "login": "Login",
+    "next": "Next",
+    "cameraTest": "Taking Picture",
+    "noImageSelected": "No image selected.",
+    "takePicture": "Take Picture",
+    "saveImage": "Save Image",
+    "changeLanguage": "Change Language",
+    "imageSaved": "Image saved successfully",
+    "imageSaveError": "Failed to save image"
+}

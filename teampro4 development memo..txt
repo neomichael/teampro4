@@ -1,0 +1,220 @@
+teampro4 development memo.
+
+
+Thy are several files needs to modify and create for this project. Files listed in below should be considered as major files.
+Other than that. I keep no change as flutter project created.
+
+1.root directory of project/teampro4. pubspec.yaml as it is, with image_gallery_saver included:
+dependencies:
+  flutter:
+    sdk: flutter
+  image_picker: ^0.8.7
+  image_gallery_saver: ^2.0.3
+  # Other dependencies you might have
+2.In android/build.gradle, update Gradle and Kotlin versions:
+buildscript {
+    ext.kotlin_version = '1.7.10'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+3. In your main app's android/app/build.gradle, ensure these settings:
+android {
+    compileSdkVersion 33
+    
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 33
+    }
+    
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
+    }
+}
+4.there's a gradle.properties file in the same directory, open it and add:
+android.useAndroidX=true
+android.enableJetifier=true
+5.Locate the image_gallery_saver plugin directory. It should be at:
+C:\Users\<YourUsername>\AppData\Local\Pub\Cache\hosted\pub.dev\image_gallery_saver-<version>\android
+above are windows 11 environment.
+In this directory, open the build.gradle file and modify it as follows:
+android {
+    compileSdkVersion 33
+    
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 33
+    }
+}
+6.Therefore, three build.gradles, gradle.properties, setting.gradle, main.dart in lib, also been updated.
+new file in root like image_gallery_saver.gradle need to be created.
+language pack.
+
+
+Q1
+release build is running now but i still missing some point. basically running in debug mode is good. how could that be possible to encounter error during release build.
+A1:
+You've made an excellent observation. The difference between debug and release builds encountering errors is quite common and can be due to several factors. Let's explore why this might be happening and how we can address it:
+
+1.Optimization: Release builds undergo more aggressive optimization, which can sometimes expose issues that aren't apparent in debug mode.
+2.ProGuard/R8: Release builds use code shrinking and obfuscation tools like ProGuard or R8, which might interfere with some dependencies.
+3.Different compiler settings: Release builds use different compiler settings, which can sometimes reveal compatibility issues.
+4.Resource shrinking: Release builds may shrink resources, potentially removing something that the app or a plugin needs.
+To address this issue specifically for your release build:
+1.Disable R8 for testing:
+In android/gradle.properties, add:    android.enableR8=false
+2.Disable resource shrinking:
+In android/app/build.gradle, in the release configuration, add:
+   buildTypes {
+       release {
+           signingConfig signingConfigs.debug
+           shrinkResources false
+           minifyEnabled false
+       }
+   }
+3.Add specific ProGuard rules:
+Create a file android/app/proguard-rules.pro if it doesn't exist, and add:
+   -keep class com.example.teampro4.** { *; }
+   -keep class io.flutter.app.** { *; }
+   -keep class io.flutter.plugin.**  { *; }
+   -keep class io.flutter.util.**  { *; }
+   -keep class io.flutter.view.**  { *; }
+   -keep class io.flutter.**  { *; }
+   -keep class io.flutter.plugins.**  { *; }
+Then, in android/app/build.gradle, reference this file:
+   android {
+       buildTypes {
+           release {
+               signingConfig signingConfigs.debug
+               proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+           }
+       }
+   }
+4.Ensure multidex is enabled:
+In android/app/build.gradle:
+   defaultConfig {
+       // ... other configs ...
+       multiDexEnabled true
+   }
+5.Try a release build with specific ABI:
+   flutter build apk --release --target-platform android-arm64
+
+After making these changes, try building the release APK again:
+flutter clean
+flutter pub get
+flutter build apk --release
+6. Create multi-language 
+create new directory under lib called l10n
+create how many files you want to support.
+app_en.arb for English, app_ja.arb for Japanese...
+There are 6 languages to be supported at the front page of APP.
+
+7. create l10n.yaml file in the root directory.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+preferred-supported-locales: [en, zh, zh_TW, zh_CN, ja, ko]
+
+How to generate release version APK.
+flutter clean
+flutter pub get
+flutter gen-l10n
+flutter build apk --release
+
+How to isntall the APK
+
+1. Locate the APK file:
+The release APK is typically located at:
+C:\Michael\GAI243_10\code\teamproject\flutter_proejcts\teampro4\build\app\outputs\flutter-apk\app-release.apk
+C:\Michael\GAI243_10\code\teamproject\flutter_proejcts\teampro4\build\app\outputs\apk\release\app-release.apk
+2.Prepare the email:
+Open your email client or web browser to compose a new email.
+Address it to your friend.
+Write a message explaining what the app is and how to install it.
+3.Attach the APK:
+Click on the "Attach" or "Add attachment" button in your email client.
+Navigate to the location of your APK file and select it.
+Alternatively, you can drag and drop the APK file into the email composition window in most email clients.
+4. Send the email:
+Review your email to ensure the APK is attached.
+Click "Send".
+
+Important notes to include in your email:
+1. Instruct your friend to download the APK to their Android device.
+2. They may need to enable "Install from unknown sources" in their device settings to install the app.
+3. To install, they should tap on the downloaded APK file and follow the prompts.
+
+If the APK file is too large for email (many email services have attachment size limits), you can use alternative methods:
+1. Upload the APK to a cloud storage service like Google Drive or Dropbox, then share the download link in your email.
+2. Use a file-sharing service like WeTransfer or Firefox Send to upload the APK and generate a download link to include in your email.
+
+Remember, this method of distribution is suitable for personal sharing or testing. For wider distribution, consider publishing your app on the Google Play Store.
+
+The l10n.yaml file is used to configure the Flutter localization tool, which generates the necessary localization files and code for your app. This file specifies the settings for the localization generation process, such as the directory containing the .arb files, the output directory for the generated localization code, and other options.
+When you use the l10n.yaml file, the Flutter localization tool (flutter gen-l10n) generates the necessary localization code, including the AppLocalizations class, which you can use in your app to access localized strings.
+Generated Code: The l10n.yaml file configures the Flutter localization tool to generate the necessary localization code, including the AppLocalizations class. This class provides access to the localized strings defined in your .arb files.
+Simplified Setup: By using the l10n.yaml file, you can simplify the localization setup process. The Flutter localization tool handles the generation of the necessary code, so you don't need to manually configure the flutter_localizations package.
+Integration with Flutter: The generated localization code integrates seamlessly with Flutter's localization system. You can use the AppLocalizations class to access localized strings in your app, and the generated code handles the necessary localization logic.
+
+Example l10n.yaml File
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+
+Example Usage in Your App
+With the l10n.yaml file configured, you can use the generated AppLocalizations class in your app to access localized strings.
+
+main.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'entrance_page.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+entrance_page.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'photo_taking.dart';
+import 'dart:io';
+import 'main.dart'; // Import the MyApp class
+
+Step 3: Ensure Localization Files
+Ensure that your .arb files are correctly set up with the necessary translations. For example, app_en.arb:
+{
+  "menuPhotography": "Menu Photography",
+  "selectLanguage": "Select Language",
+  "enterName": "Enter your name",
+  "notPreferred": "Not preferred ingredients",
+  "register": "Register",
+  "login": "Login",
+  "next": "Next",
+  "cameraTest": "Taking Picture",
+  "noImageSelected": "No image selected.",
+  "takePicture": "Take Picture",
+  "saveImage": "Save Image",
+  "changeLanguage": "Change Language",
+  "imageSaved": "Image saved successfully",
+  "imageSaveError": "Failed to save image"
+}
+Step 4: Ensure pubspec.yaml is Correct
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - lib/l10n/
+Step 5: Rebuild the Project
+flutter clean
+flutter pub get
+flutter run
+    

@@ -1,0 +1,30 @@
+def PLUGIN = "image_gallery_saver";
+def ANDROIDX_WARNING = "androidx.annotation.Nullable";
+def ANDROIDX_LINT = "androidx.annotation.RecentlyNullable";
+def CORE_PLUGIN_IMPORT = "io.flutter.plugin.common.PluginRegistry";
+def CORE_PLUGIN_V2_IMPORT = "io.flutter.embedding.engine.plugins.FlutterPlugin";
+
+gradle.projectsEvaluated {
+    project.extensions.findByName('android')?.applicationVariants?.all { variant ->
+        def variantName = variant.name.capitalize()
+        def generatedSourcesDir = project.buildDir.path + "/generated/source/kapt/$variantName"
+
+        task "add${variantName}GeneratedAnnotations" {
+            doLast {
+                File file = new File(generatedSourcesDir + "/$PLUGIN/ImageGallerySaverPlugin.java")
+                if (file.exists()) {
+                    String contents = file.getText('UTF-8')
+                    contents = contents.replace("import $ANDROIDX_WARNING;", "import $ANDROIDX_LINT;")
+                    contents = contents.replace("import $CORE_PLUGIN_IMPORT;", "import $CORE_PLUGIN_V2_IMPORT;")
+                    file.write(contents, 'UTF-8')
+                }
+            }
+        }
+
+        variant.javaCompileProvider.get().dependsOn "add${variantName}GeneratedAnnotations"
+    }
+}
+
+android {
+    namespace 'com.example.imagegallerysaver'
+}
