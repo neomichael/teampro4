@@ -2,6 +2,7 @@
     "menuPhotography": "菜单拍摄",
     "selectLanguage": "选择语言",
     "enterName": "输入您的名字",
+    "enterTelephone": "输入您的电话",
     "notPreferred": "不喜欢的食材",
     "register": "注册",
     "login": "登录",
@@ -12,5 +13,6 @@
     "saveImage": "保存图片",
     "changeLanguage": "更改语言",
     "imageSaved": "图片已成功保存",
-    "imageSaveError": "保存图片失败"
+    "imageSaveError": "保存图片失败",
+    "create": "创建"
 }

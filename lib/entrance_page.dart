@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'photo_taking.dart';
 import 'dart:io';
 import 'main.dart'; // Import the MyApp class
+import 'registration_page.dart'; 
 
 class EntrancePage extends StatefulWidget {
   @override
@@ -97,7 +98,12 @@ class _EntrancePageState extends State<EntrancePage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        print('Register as new user');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegistrationPage(),
+                          ),
+                        );
                       },
                       child: Text(AppLocalizations.of(context)!.register),
                     ),

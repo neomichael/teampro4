@@ -2,6 +2,7 @@
     "menuPhotography": "菜單拍攝",
     "selectLanguage": "選擇語言",
     "enterName": "輸入您的名字",
+    "enterTelephone": "輸入您的電話",
     "notPreferred": "不喜歡的食材",
     "register": "註冊",
     "login": "登入",
@@ -12,5 +13,6 @@
     "saveImage": "儲存圖片",
     "changeLanguage": "更改語言",
     "imageSaved": "圖片已成功儲存",
-    "imageSaveError": "儲存圖片失敗"
-}
+    "imageSaveError": "儲存圖片失敗",
+    "create": "建立"
+} 

@@ -2,6 +2,7 @@
     "menuPhotography": "Menu Photography",
     "selectLanguage": "Select Language",
     "enterName": "Enter your name",
+    "enterTelephone": "Enter your telephone",
     "notPreferred": "Not preferred ingredients",
     "register": "Register",
     "login": "Login",
@@ -12,5 +13,6 @@
     "saveImage": "Save Image",
     "changeLanguage": "Change Language",
     "imageSaved": "Image saved successfully",
-    "imageSaveError": "Failed to save image"
+    "imageSaveError": "Failed to save image",
+    "create": "Create"
 }
