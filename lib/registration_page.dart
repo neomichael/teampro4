@@ -25,15 +25,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
       try {
         // Save to CSV
         final Directory directory = await getApplicationDocumentsDirectory();
-        final String path = '${directory.path}/info.csv';
+        final String path = '${directory.path}/user_info.csv';
         final File file = File(path);
 
-        final bool fileExists = await file.exists();
-        if (!fileExists) {
-          await file.writeAsString('Name,Telephone,Email\n');
-        }
+        // Create CSV content
+        final String csvContent = 'Name,Telephone,Email\n$name,$telephone,$email';
 
-        await file.writeAsString('$name,$telephone,$email\n', mode: FileMode.append);
+        // Write to file
+        await file.writeAsString(csvContent);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User information saved successfully!')),
+        );
 
         // Attempt to save to API
         try {

@@ -3,48 +3,69 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'photo_taking.dart';
 import 'main.dart';
 import 'registration_page.dart';
+import 'user_info_page.dart'; // Add this import
 
 class EntrancePage extends StatefulWidget {
+  final Map<String, String>? userInfo;
+
+  const EntrancePage({Key? key, this.userInfo}) : super(key: key);
+
   @override
   _EntrancePageState createState() => _EntrancePageState();
 }
 
 class _EntrancePageState extends State<EntrancePage> {
   String _selectedLanguage = 'zh_TW';
-  String _name = '';
+  late TextEditingController _nameController;
   List<String> _notPreferred = [];
   List<String> _ingredients = ['onion', 'garlic', 'beer', 'peanut', 'shellfish'];
   bool _isLoginEnabled = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.userInfo?['name'] ?? '');
+    _isLoginEnabled = widget.userInfo != null;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
   void _updateLocale(String languageCode) {
     Locale newLocale;
     switch (languageCode) {
-      case 'en':
-        newLocale = Locale('en');
-        break;
-      case 'zh_TW':
-        newLocale = Locale('zh', 'TW');
-        break;
-      case 'zh':
-        newLocale = Locale('zh');
-        break;
-      default:
-        newLocale = Locale('zh', 'TW');  // Default to Traditional Chinese
+        case 'en':
+            newLocale = Locale('en');
+            break;
+        case 'zh_TW':
+            newLocale = Locale('zh', 'TW');
+            break;
+        case 'zh':
+            newLocale = Locale('zh');
+            break;
+        default:
+            newLocale = Locale('zh', 'TW');  // Default to Traditional Chinese
+    }
+    final myAppState = MyApp.of(context);
+    if (myAppState != null) {
+    myAppState.setLocale(newLocale);
   }
-    MyApp.setLocale(context, newLocale);
   }
 
   String _getLanguageName(String languageCode) {
     switch (languageCode) {
-      case 'en':
+    case 'en':
         return 'English';
-      case 'zh_TW':
+    case 'zh_TW':
         return '繁體中文';
-      case 'zh':
+    case 'zh':
         return '简体中文';
-      default:
-        return languageCode;
-    }
+    default:
+        return languageCode;  // This ensures a non-null return
+    }    // ... (keep your existing _getLanguageName method)
   }
 
   @override
@@ -88,7 +109,7 @@ class _EntrancePageState extends State<EntrancePage> {
                     labelText: AppLocalizations.of(context)!.enterName,
                     border: OutlineInputBorder(),
                   ),
-                  controller: TextEditingController(text: _name),
+                  controller: _nameController,
                   readOnly: true,
                 ),
                 SizedBox(height: 20),
@@ -144,7 +165,7 @@ class _EntrancePageState extends State<EntrancePage> {
                         );
                         if (result != null && result is String) {
                           setState(() {
-                            _name = result;
+                            _nameController.text = result;
                             _isLoginEnabled = true;
                           });
                         }
@@ -160,20 +181,49 @@ class _EntrancePageState extends State<EntrancePage> {
                   ],
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PhotoTakingScreen(
-                          onImageSaved: (dynamic image) {
-                            // Handle saved image
-                          },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PhotoTakingScreen(
+                              onImageSaved: (dynamic image) {
+                                // Handle saved image
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(AppLocalizations.of(context)!.next),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(buttonWidth, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                    );
-                  },
-                  child: Text(AppLocalizations.of(context)!.next),
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserInfoPage(userInfo: widget.userInfo),
+                          ),
+                        );
+                      },
+                      child: Text('USRINFO', style: TextStyle(fontSize: 14)),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(buttonWidth, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
