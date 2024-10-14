@@ -3,6 +3,7 @@
     "selectLanguage": "选择语言",
     "enterName": "输入您的名字",
     "enterTelephone": "输入您的电话",
+    "enterEmail": "输入电子邮件",
     "notPreferred": "不喜欢的食材",
     "register": "注册",
     "login": "登录",

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'photo_taking.dart';
-import 'dart:io';
-import 'main.dart'; // Import the MyApp class
-import 'registration_page.dart'; 
+import 'main.dart';
+import 'registration_page.dart';
 
 class EntrancePage extends StatefulWidget {
   @override
@@ -15,9 +14,44 @@ class _EntrancePageState extends State<EntrancePage> {
   String _name = '';
   List<String> _notPreferred = [];
   List<String> _ingredients = ['onion', 'garlic', 'beer', 'peanut', 'shellfish'];
+  bool _isLoginEnabled = false;
+
+  void _updateLocale(String languageCode) {
+    Locale newLocale;
+    switch (languageCode) {
+      case 'en':
+        newLocale = Locale('en');
+        break;
+      case 'zh_TW':
+        newLocale = Locale('zh', 'TW');
+        break;
+      case 'zh':
+        newLocale = Locale('zh');
+        break;
+      default:
+        newLocale = Locale('zh', 'TW');  // Default to Traditional Chinese
+  }
+    MyApp.setLocale(context, newLocale);
+  }
+
+  String _getLanguageName(String languageCode) {
+    switch (languageCode) {
+      case 'en':
+        return 'English';
+      case 'zh_TW':
+        return '繁體中文';
+      case 'zh':
+        return '简体中文';
+      default:
+        return languageCode;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double buttonWidth = screenWidth * 0.4;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.menuPhotography),
@@ -36,11 +70,11 @@ class _EntrancePageState extends State<EntrancePage> {
                     if (newValue != null) {
                       setState(() {
                         _selectedLanguage = newValue;
-                        _updateLocale(newValue);// Update locale
+                        _updateLocale(newValue);
                       });
                     }
                   },
-                  items: <String>['en', 'zh_TW', 'zh_CN', 'ja', 'ko', 'zh']
+                  items: <String>['en', 'zh_TW', 'zh']
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -54,11 +88,8 @@ class _EntrancePageState extends State<EntrancePage> {
                     labelText: AppLocalizations.of(context)!.enterName,
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _name = value;
-                    });
-                  },
+                  controller: TextEditingController(text: _name),
+                  readOnly: true,
                 ),
                 SizedBox(height: 20),
                 DropdownButton<String>(
@@ -97,22 +128,34 @@ class _EntrancePageState extends State<EntrancePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegistrationPage(),
-                          ),
-                        );
-                      },
-                      child: Text(AppLocalizations.of(context)!.register),
+                      onPressed: _isLoginEnabled
+                          ? () {
+                              print('Login as existing user');
+                            }
+                          : null,
+                      child: Text(AppLocalizations.of(context)!.login),
                     ),
                     SizedBox(width: 16),
                     ElevatedButton(
-                      onPressed: () {
-                        print('Login as existing user');
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RegistrationPage()),
+                        );
+                        if (result != null && result is String) {
+                          setState(() {
+                            _name = result;
+                            _isLoginEnabled = true;
+                          });
+                        }
                       },
-                      child: Text(AppLocalizations.of(context)!.login),
+                      child: Text(AppLocalizations.of(context)!.register),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(buttonWidth, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -123,7 +166,7 @@ class _EntrancePageState extends State<EntrancePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => PhotoTakingScreen(
-                          onImageSaved: (File image) {
+                          onImageSaved: (dynamic image) {
                             // Handle saved image
                           },
                         ),
@@ -138,51 +181,5 @@ class _EntrancePageState extends State<EntrancePage> {
         ),
       ),
     );
-  }
-
-  void _updateLocale(String languageCode) {
-    Locale newLocale;
-    switch (languageCode) {
-      case 'en':
-        newLocale = Locale('en');
-        break;
-      case 'zh_TW':
-        newLocale = Locale('zh', 'TW');
-        break;
-      case 'zh_CN':
-        newLocale = Locale('zh', 'CN');
-        break;
-      case 'ja':
-        newLocale = Locale('ja');
-        break;
-      case 'ko':
-        newLocale = Locale('ko');
-        break;
-      case 'zh':
-        newLocale = Locale('zh');
-        break;
-      default:
-        newLocale = Locale('en');
-    }
-    MyApp.setLocale(context, newLocale);
-  }
-
-  String _getLanguageName(String languageCode) {
-    switch (languageCode) {
-      case 'en':
-        return 'English';
-      case 'zh_TW':
-        return '繁體中文';
-      case 'zh_CN':
-        return '简体中文';
-      case 'ja':
-        return '日本語';
-      case 'ko':
-        return '한국어';
-      case 'zh':
-        return '中文';
-      default:
-        return languageCode;
-    }
   }
 }

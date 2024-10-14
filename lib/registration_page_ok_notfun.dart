@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'api_helper.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -12,16 +11,13 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _telephoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   bool _isSaved = false;
-  final ApiHelper apiHelper = ApiHelper();
 
   Future<void> _saveInfo() async {
     final String name = _nameController.text;
     final String telephone = _telephoneController.text;
-    final String email = _emailController.text;
 
-    if (name.isNotEmpty && telephone.isNotEmpty && email.isNotEmpty) {
+    if (name.isNotEmpty && telephone.isNotEmpty) {
       try {
         // Save to CSV
         final Directory directory = await getApplicationDocumentsDirectory();
@@ -30,30 +26,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
         final bool fileExists = await file.exists();
         if (!fileExists) {
-          await file.writeAsString('Name,Telephone,Email\n');
+          await file.writeAsString('Name,Telephone\n');
         }
 
-        await file.writeAsString('$name,$telephone,$email\n', mode: FileMode.append);
-
-        // Attempt to save to API
-        try {
-          await apiHelper.insertCustomer(name, telephone, email);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Data saved successfully to CSV and API!')),
-          );
-        } catch (e) {
-          print('API save failed: $e');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Data saved to CSV. API save failed: ${e.toString()}')),
-          );
-        }
+        await file.writeAsString('$name,$telephone\n', mode: FileMode.append);
 
         setState(() {
           _isSaved = true;
         });
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data saved successfully to CSV!')),
+        );
+
         // Return to entrance page after a short delay
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(Duration(seconds: 1), () {
           Navigator.pop(context, name);
         });
       } catch (e) {
@@ -80,26 +67,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.enterName,
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterName),
             ),
-            SizedBox(height: 16),
             TextField(
               controller: _telephoneController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.enterTelephone,
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.enterEmail,
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterTelephone),
             ),
             SizedBox(height: 20),
             ElevatedButton(
