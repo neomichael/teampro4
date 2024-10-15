@@ -4,6 +4,7 @@ import 'photo_taking.dart';
 import 'main.dart';
 import 'registration_page.dart';
 import 'user_info_page.dart'; // Add this import
+import 'csv_helper.dart';
 
 class EntrancePage extends StatefulWidget {
   final Map<String, String>? userInfo;
@@ -34,25 +35,34 @@ class _EntrancePageState extends State<EntrancePage> {
     super.dispose();
   }
 
+  void _updateNonPreferredFoods() {
+    if (_nameController.text.isNotEmpty) {
+      CSVHelper.updateNonPreferredFoods(_nameController.text, _notPreferred);
+    }
+  }
+
   void _updateLocale(String languageCode) {
     Locale newLocale;
     switch (languageCode) {
-        case 'en':
-            newLocale = Locale('en');
-            break;
-        case 'zh_TW':
-            newLocale = Locale('zh', 'TW');
-            break;
-        case 'zh':
-            newLocale = Locale('zh');
-            break;
-        default:
-            newLocale = Locale('zh', 'TW');  // Default to Traditional Chinese
+      case 'en':
+        newLocale = Locale('en');
+        break;
+      case 'zh_TW':
+        newLocale = Locale('zh', 'TW');
+        break;
+      case 'zh':
+        newLocale = Locale('zh');
+        break;
+      default:
+        newLocale = Locale('zh', 'TW');  // Default to Traditional Chinese
     }
     final myAppState = MyApp.of(context);
     if (myAppState != null) {
-    myAppState.setLocale(newLocale);
-  }
+      myAppState.setLocale(newLocale);
+    }
+    if (_nameController.text.isNotEmpty) {
+      CSVHelper.updateLanguage(_nameController.text, languageCode);
+    }
   }
 
   String _getLanguageName(String languageCode) {
@@ -67,6 +77,23 @@ class _EntrancePageState extends State<EntrancePage> {
         return languageCode;  // This ensures a non-null return
     }    // ... (keep your existing _getLanguageName method)
   }
+
+  String getIngredientTranslation(String ingredient, BuildContext context) {
+    switch (ingredient) {
+      case 'onion':
+        return AppLocalizations.of(context)!.onion;
+      case 'garlic':
+        return AppLocalizations.of(context)!.garlic;
+      case 'beer':
+        return AppLocalizations.of(context)!.beer;
+      case 'peanut':
+        return AppLocalizations.of(context)!.peanut;
+      case 'shellfish':
+        return AppLocalizations.of(context)!.shellfish;
+      default:
+        return ingredient;
+    }
+  }  
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +148,7 @@ class _EntrancePageState extends State<EntrancePage> {
                       setState(() {
                         _notPreferred.add(newValue);
                       });
+                      _updateNonPreferredFoods();
                     }
                   },
                   items: _ingredients
@@ -136,10 +164,12 @@ class _EntrancePageState extends State<EntrancePage> {
                   children: _notPreferred.map((ingredient) {
                     return Chip(
                       label: Text(ingredient),
+                      // In the Chip onDeleted callback
                       onDeleted: () {
                         setState(() {
                           _notPreferred.remove(ingredient);
                         });
+                        _updateNonPreferredFoods();
                       },
                     );
                   }).toList(),

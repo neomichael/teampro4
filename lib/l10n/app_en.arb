@@ -2,7 +2,7 @@
     "menuPhotography": "Menu Photography",
     "selectLanguage": "Select Language",
     "enterName": "Enter your name",
-    "enterTelephone": "Enter your telephone",
+    "enterPassword": "Enter your password",
     "enterEmail": "Enter Email",
     "notPreferred": "Not preferred ingredients",
     "register": "Register",
@@ -15,5 +15,10 @@
     "changeLanguage": "Change Language",
     "imageSaved": "Image saved successfully",
     "imageSaveError": "Failed to save image",
-    "create": "Create"
+    "create": "Create",
+    "onion": "Onion",
+    "garlic": "Garlic",
+    "beer": "Beer",
+    "peanut": "Peanut",
+    "shellfish": "Shellfish"
 }

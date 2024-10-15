@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'csv_helper.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -10,14 +11,19 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _telephoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  List<String> _notPreferred = [];
+  List<String> _ingredients = ['onion', 'garlic', 'beer', 'peanut', 'shellfish'];
   bool _isSaved = false;
+  String _selectedLanguage = 'zh_TW'; // Default language
 
   Future<void> _saveInfo() async {
     final String name = _nameController.text;
-    final String telephone = _telephoneController.text;
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
 
-    if (name.isNotEmpty && telephone.isNotEmpty) {
+    if (name.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
       try {
         // Save to CSV
         final Directory directory = await getApplicationDocumentsDirectory();
@@ -26,10 +32,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
         final bool fileExists = await file.exists();
         if (!fileExists) {
-          await file.writeAsString('Name,Telephone\n');
+          await file.writeAsString('Name,Email,Password,NonPreferredFoods,Language\n');
         }
 
-        await file.writeAsString('$name,$telephone\n', mode: FileMode.append);
+        final String nonPreferredFoodsString = _notPreferred.join(';');
+        await file.writeAsString('$name,$email,$password,$nonPreferredFoodsString,$_selectedLanguage\n', mode: FileMode.append);
+
+        // Also save using CSVHelper for consistency
+        await CSVHelper.saveInfo(name, email, password, _notPreferred, _selectedLanguage);
 
         setState(() {
           _isSaved = true;
@@ -61,17 +71,43 @@ class _RegistrationPageState extends State<RegistrationPage> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.register),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _nameController,
               decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterName),
             ),
             TextField(
-              controller: _telephoneController,
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterTelephone),
+              controller: _emailController,
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterEmail),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.enterPassword),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            Text(AppLocalizations.of(context)!.notPreferred),
+            Wrap(
+              spacing: 8.0,
+              children: _ingredients.map((String ingredient) {
+                return FilterChip(
+                  label: Text(ingredient),
+                  selected: _notPreferred.contains(ingredient),
+                  onSelected: (bool selected) {
+                    setState(() {
+                      if (selected) {
+                        _notPreferred.add(ingredient);
+                      } else {
+                        _notPreferred.remove(ingredient);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
             ),
             SizedBox(height: 20),
             ElevatedButton(

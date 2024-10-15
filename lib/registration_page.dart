@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'api_helper.dart';
+import 'csv_helper.dart';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -11,28 +12,22 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _telephoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  bool _isSaved = false;
+  final TextEditingController _passwordController = TextEditingController();
   final ApiHelper apiHelper = ApiHelper();
+  bool _isSaved = false;
+  List<String> _notPreferred = [];
+  String _selectedLanguage = 'zh_TW';
 
   Future<void> _saveInfo() async {
     final String name = _nameController.text;
-    final String telephone = _telephoneController.text;
     final String email = _emailController.text;
+    final String password = _passwordController.text;
 
-    if (name.isNotEmpty && telephone.isNotEmpty && email.isNotEmpty) {
+    if (name.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
       try {
         // Save to CSV
-        final Directory directory = await getApplicationDocumentsDirectory();
-        final String path = '${directory.path}/user_info.csv';
-        final File file = File(path);
-
-        // Create CSV content
-        final String csvContent = 'Name,Telephone,Email\n$name,$telephone,$email';
-
-        // Write to file
-        await file.writeAsString(csvContent);
+        await CSVHelper.saveInfo(name, email, password, _notPreferred, _selectedLanguage);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('User information saved successfully!')),
@@ -40,7 +35,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
         // Attempt to save to API
         try {
-          await apiHelper.insertCustomer(name, telephone, email);
+          await apiHelper.insertCustomer(name, email, password);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Data saved successfully to CSV and API!')),
           );
@@ -61,7 +56,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving to CSV: ${e.toString()}')),
+          SnackBar(content: Text('Error saving information: ${e.toString()}')),
         );
       }
     } else {
@@ -90,19 +85,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             SizedBox(height: 16),
             TextField(
-              controller: _telephoneController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.enterTelephone,
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.enterEmail,
                 border: OutlineInputBorder(),
               ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.enterPassword,
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
             ),
             SizedBox(height: 20),
             ElevatedButton(

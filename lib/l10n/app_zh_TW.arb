@@ -2,7 +2,7 @@
     "menuPhotography": "菜單拍攝",
     "selectLanguage": "選擇語言",
     "enterName": "輸入您的名字",
-    "enterTelephone": "輸入您的電話",
+    "enterPassword": "請輸入您的密碼",
     "enterEmail": "輸入電子郵件",
     "notPreferred": "不喜歡的食材",
     "register": "註冊",
@@ -15,5 +15,10 @@
     "changeLanguage": "更改語言",
     "imageSaved": "圖片已成功儲存",
     "imageSaveError": "儲存圖片失敗",
-    "create": "建立"
+    "create": "建立",
+    "onion": "洋蔥",
+    "garlic": "大蒜",
+    "beer": "啤酒",
+    "peanut": "花生",
+    "shellfish": "貝類"
 } 
