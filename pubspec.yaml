@@ -20,8 +20,12 @@ dependencies:
   sqflite: ^2.2.8+4
   http: ^1.2.2
 
+  # sqljocky5: 2.0.0
+  path: any
+  mongo_dart: any
 flutter:
   uses-material-design: true
   generate: true
   assets:
     - lib/l10n/
+

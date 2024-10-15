@@ -255,6 +255,50 @@ class _EntrancePageState extends State<EntrancePage> {
                     ),
                   ],
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PhotoTakingScreen(
+                              onImageSaved: (dynamic image) {
+                                // Handle saved image
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(AppLocalizations.of(context)!.next),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(buttonWidth, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserInfoPage(userInfo: widget.userInfo),
+                          ),
+                        );
+                      },
+                      child: Text('SRV', style: TextStyle(fontSize: 14)),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(buttonWidth, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
