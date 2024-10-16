@@ -288,11 +288,11 @@ class _EntrancePageState extends State<EntrancePage> {
                       onPressed: () async {
                         // Call registerUser() to test the connection
                         String dbSaveResult = await _azureSqlHelper.registerUser(
-                          email: 'test@example.com',
-                          password: 'password123',
+                          email: 'mikelin0502@yahoo.com.tw',
+                          password: 'Password123',
                           taboos: 'None',
-                          userName: 'Test User',  
-                          language: 'en',  
+                          userName: 'Michael',  
+                          language: 'en-US',  
                         );
 
                         bool dbSaveSuccess = dbSaveResult == 'register ok';

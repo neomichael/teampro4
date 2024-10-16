@@ -1,5 +1,5 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class AzureSqlHelper {
   // Singleton instance
@@ -20,18 +20,25 @@ class AzureSqlHelper {
     required String language,
   }) async {
     try {
+      final reqBody = {
+        'Email': email,
+        'Password': password,
+        'Taboos': taboos,
+        'UserName': userName,
+        'Language': language,
+      };
+
+      // Debugging: Print the reqBody map and its JSON-encoded form
+      print('reqBody (as Dart Map): $reqBody');
+      print('reqBody (as JSON): ${jsonEncode(reqBody)}'); 
+
       final response = await http.post(
         Uri.parse(_apiUrl),
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json', // Ensure API can process JSON
         },
-        body: jsonEncode({
-          'Email': email,
-          'Password': password,
-          'Taboos': taboos,
-          if (userName != null) 'UserName': userName,
-          'Language': language,
-        }),
+        body: jsonEncode(reqBody), // Encode reqBody as JSON
       );
 
       if (response.statusCode == 200) {
