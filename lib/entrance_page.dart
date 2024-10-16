@@ -5,6 +5,7 @@ import 'main.dart';
 import 'registration_page.dart';
 import 'user_info_page.dart'; // Add this import
 import 'csv_helper.dart';
+import 'azure_sql_helper.dart';
 
 class EntrancePage extends StatefulWidget {
   final Map<String, String>? userInfo;
@@ -21,6 +22,7 @@ class _EntrancePageState extends State<EntrancePage> {
   List<String> _notPreferred = [];
   List<String> _ingredients = ['onion', 'garlic', 'beer', 'peanut', 'shellfish'];
   bool _isLoginEnabled = false;
+  final AzureSqlHelper _azureSqlHelper = AzureSqlHelper(); // Create an instance
 
   @override
   void initState() {
@@ -279,21 +281,37 @@ class _EntrancePageState extends State<EntrancePage> {
                         ),
                       ),
                     ),
+                    // create for server connection test, the file name is azure_sql_helper.dart
+                    // I need to create here for server connection test
                     SizedBox(width: 16),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => UserInfoPage(userInfo: widget.userInfo),
-                          ),
+                      onPressed: () async {
+                        // Call registerUser() to test the connection
+                        String dbSaveResult = await _azureSqlHelper.registerUser(
+                          email: 'test@example.com',
+                          password: 'password123',
+                          taboos: 'None',
+                          userName: 'Test User',  
+                          language: 'en',  
                         );
+
+                        bool dbSaveSuccess = dbSaveResult == 'register ok';
+
+                        // Show result on screen with a Snackbar
+                        if (dbSaveSuccess) {
+                          // Registration successful
+                          Navigator.pop(context, 'test@example.com');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Registration failed: $dbSaveResult')),
+                          );
+                        }
                       },
-                      child: Text('SRV', style: TextStyle(fontSize: 14)),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(buttonWidth, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        child: Text('SRV', style: TextStyle(fontSize: 14)),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(buttonWidth, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),

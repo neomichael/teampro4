@@ -8,15 +8,16 @@ class AzureSqlHelper {
   AzureSqlHelper._privateConstructor();
 
   // API endpoint
-  final String _apiUrl = 'https://gai243aifoodie20241014-d0dtgyfcajabccc7.southindia-01.azurewebsites.net/api/User/register';
+  final String _apiUrl =
+      'https://gai243aifoodie20241014-d0dtgyfcajabccc7.southindia-01.azurewebsites.net/api/User/register';
 
-  // Register a new user
-  Future<bool> registerUser({
+  // Register a new user and test connection
+  Future<String> registerUser({
     required String email,
     required String password,
     required String taboos,
-    String? userName,
-    String language = 'zh-TW',
+    required String userName,
+    required String language,
   }) async {
     try {
       final response = await http.post(
@@ -34,16 +35,22 @@ class AzureSqlHelper {
       );
 
       if (response.statusCode == 200) {
-        print('User registered successfully');
-        return true;
+        // Parse JSON response to check for "register ok"
+        final responseData = jsonDecode(response.body);
+        if (responseData['message'] == 'register ok') {
+          print('User registered successfully: register ok');
+          return 'register ok';
+        } else {
+          print('Registration failed: ${responseData['message']}');
+          return 'Registration failed: ${responseData['message']}';
+        }
       } else {
         print('Failed to register user. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
-        return false;
+        return 'Failed with status: ${response.statusCode}';
       }
     } catch (e) {
       print('Error registering user: $e');
-      return false;
+      return 'Error: $e';
     }
   }
-
+}
