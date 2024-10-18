@@ -289,18 +289,20 @@ class _EntrancePageState extends State<EntrancePage> {
                         // Call registerUser() to test the connection
                         String dbSaveResult = await _azureSqlHelper.registerUser(
                           email: 'mikelin0502@yahoo.com.tw',
-                          password: 'Password123',
+                          password: 'Password123@',
                           taboos: 'None',
                           userName: 'Michael',  
                           language: 'en-US',  
                         );
 
-                        bool dbSaveSuccess = dbSaveResult == 'register ok';
+                        bool dbSaveSuccess = dbSaveResult == 'User registered successfully.';
 
                         // Show result on screen with a Snackbar
                         if (dbSaveSuccess) {
                           // Registration successful
-                          Navigator.pop(context, 'test@example.com');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('$dbSaveResult')),
+                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Registration failed: $dbSaveResult')),

@@ -30,7 +30,7 @@ class AzureSqlHelper {
 
       // Debugging: Print the reqBody map and its JSON-encoded form
       print('reqBody (as Dart Map): $reqBody');
-      print('reqBody (as JSON): ${jsonEncode(reqBody)}'); 
+      print('reqBody (as JSON): ${jsonEncode(reqBody)}');
 
       final response = await http.post(
         Uri.parse(_apiUrl),
@@ -40,20 +40,21 @@ class AzureSqlHelper {
         },
         body: jsonEncode(reqBody), // Encode reqBody as JSON
       );
-
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
       if (response.statusCode == 200) {
         // Parse JSON response to check for "register ok"
         final responseData = jsonDecode(response.body);
-        if (responseData['message'] == 'register ok') {
-          print('User registered successfully: register ok');
-          return 'register ok';
+        if (responseData['message'] == 'User registered successfully.') {
+          print('User registered successfully.');
+          return 'User registered successfully.';
         } else {
           print('Registration failed: ${responseData['message']}');
-          return 'Registration failed: ${responseData['message']}';
+          return '${responseData['message']}';
         }
       } else {
         print('Failed to register user. Status code: ${response.statusCode}');
-        return 'Failed with status: ${response.statusCode}';
+        return '${response.statusCode}';
       }
     } catch (e) {
       print('Error registering user: $e');
