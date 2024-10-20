@@ -8,17 +8,20 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.3.10' // Add this line
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.0' // Add this line for emulators
+        classpath 'com.google.gms:google-services:4.3.14' // Add this line
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.0' // Add this line for emulators
     }
 }
 
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
+    // id 'com.google.gms.google-services'
+    // id 'com.google.firebase.crashlytics'
 }
+
+apply(plugin: 'com.google.gms.google-services') // Add this line
+apply(plugin: 'com.google.firebase.crashlytics') // Add this line for emulators
 
 allprojects {
     repositories {
@@ -35,6 +38,14 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
-}
+android {
+    compileSdkVersion 34 // Add this line
+    namespace 'com.example.teampro4' // Added this line
+    defaultConfig {
+        applicationId "com.example.teampro4"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+    }
+}    

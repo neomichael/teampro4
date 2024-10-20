@@ -28,8 +28,14 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+// apply plugin: 'com.android.application'
+// apply plugin: 'kotlin-android'
+// apply plugin: 'com.google.gms.google-services' // Ensure this line is present
+// apply plugin: 'com.google.firebase.crashlytics'
+
+println("Applying flutter.gradle from Flutter SDK...")
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.firebase.crashlytics'
+println("flutter.gradle applied successfully.")
 
 android {
     namespace "com.example.teampro4"
