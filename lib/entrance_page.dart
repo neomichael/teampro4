@@ -3,9 +3,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'photo_taking.dart';
 import 'main.dart';
 import 'registration_page.dart';
-import 'user_info_page.dart'; // Add this import
+import 'user_info_page.dart';
 import 'csv_helper.dart';
 import 'azure_sql_helper.dart';
+import 'menu_parsing.dart';
 
 class EntrancePage extends StatefulWidget {
   final Map<String, String>? userInfo;
@@ -22,7 +23,7 @@ class _EntrancePageState extends State<EntrancePage> {
   List<String> _notPreferred = [];
   List<String> _ingredients = ['onion', 'garlic', 'beer', 'peanut', 'shellfish'];
   bool _isLoginEnabled = false;
-  final AzureSqlHelper _azureSqlHelper = AzureSqlHelper(); // Create an instance
+  final AzureSqlHelper _azureSqlHelper = AzureSqlHelper();
 
   @override
   void initState() {
@@ -69,15 +70,15 @@ class _EntrancePageState extends State<EntrancePage> {
 
   String _getLanguageName(String languageCode) {
     switch (languageCode) {
-    case 'en':
+      case 'en':
         return 'English';
-    case 'zh_TW':
+      case 'zh_TW':
         return '繁體中文';
-    case 'zh':
+      case 'zh':
         return '简体中文';
-    default:
-        return languageCode;  // This ensures a non-null return
-    }    // ... (keep your existing _getLanguageName method)
+      default:
+        return languageCode;
+    }
   }
 
   String getIngredientTranslation(String ingredient, BuildContext context) {
@@ -95,7 +96,7 @@ class _EntrancePageState extends State<EntrancePage> {
       default:
         return ingredient;
     }
-  }  
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,220 +107,220 @@ class _EntrancePageState extends State<EntrancePage> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.menuPhotography),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                DropdownButton<String>(
-                  value: _selectedLanguage,
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedLanguage = newValue;
-                        _updateLocale(newValue);
-                      });
-                    }
-                  },
-                  items: <String>['en', 'zh_TW', 'zh']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(_getLanguageName(value)),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.enterName,
-                    border: OutlineInputBorder(),
-                  ),
-                  controller: _nameController,
-                  readOnly: true,
-                ),
-                SizedBox(height: 20),
-                DropdownButton<String>(
-                  hint: Text(AppLocalizations.of(context)!.notPreferred),
-                  value: _notPreferred.isNotEmpty ? _notPreferred.last : null,
-                  onChanged: (String? newValue) {
-                    if (newValue != null && !_notPreferred.contains(newValue)) {
-                      setState(() {
-                        _notPreferred.add(newValue);
-                      });
-                      _updateNonPreferredFoods();
-                    }
-                  },
-                  items: _ingredients
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-                Wrap(
-                  spacing: 8.0,
-                  children: _notPreferred.map((ingredient) {
-                    return Chip(
-                      label: Text(ingredient),
-                      // In the Chip onDeleted callback
-                      onDeleted: () {
+
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  DropdownButton<String>(
+                    value: _selectedLanguage,
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
                         setState(() {
-                          _notPreferred.remove(ingredient);
+                          _selectedLanguage = newValue;
+                          _updateLocale(newValue);
+                        });
+                      }
+                    },
+                    items: <String>['en', 'zh_TW', 'zh']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(_getLanguageName(value)),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 20),
+                  TextField(
+                    decoration: InputDecoration(
+                      fillColor: Colors.white.withOpacity(0.3), // Set light white transparency
+                      filled: true,
+                      labelText: AppLocalizations.of(context)!.enterName,
+                      border: OutlineInputBorder(),
+                    ),
+                    controller: _nameController,
+                    readOnly: true,
+                  ),
+                  SizedBox(height: 20),
+                  DropdownButton<String>(
+                    hint: Text(AppLocalizations.of(context)!.notPreferred),
+                    value: _notPreferred.isNotEmpty ? _notPreferred.last : null,
+                    onChanged: (String? newValue) {
+                      if (newValue != null && !_notPreferred.contains(newValue)) {
+                        setState(() {
+                          _notPreferred.add(newValue);
                         });
                         _updateNonPreferredFoods();
-                      },
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _isLoginEnabled
-                          ? () {
-                              print('Login as existing user');
-                            }
-                          : null,
-                      child: Text(AppLocalizations.of(context)!.login),
-                    ),
-                    SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => RegistrationPage()),
-                        );
-                        if (result != null && result is String) {
+                      }
+                    },
+                    items: _ingredients
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  Wrap(
+                    spacing: 8.0,
+                    children: _notPreferred.map((ingredient) {
+                      return Chip(
+                        label: Text(ingredient),
+                        onDeleted: () {
                           setState(() {
-                            _nameController.text = result;
-                            _isLoginEnabled = true;
+                            _notPreferred.remove(ingredient);
                           });
+                          _updateNonPreferredFoods();
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _isLoginEnabled
+                            ? () {
+                          print('Login as existing user');
                         }
-                      },
-                      child: Text(AppLocalizations.of(context)!.register),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(buttonWidth, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                            : null,
+                        child: Text(AppLocalizations.of(context)!.login),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PhotoTakingScreen(
-                              onImageSaved: (dynamic image) {
-                                // Handle saved image
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      child: Text(AppLocalizations.of(context)!.next),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(buttonWidth, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => UserInfoPage(userInfo: widget.userInfo),
-                          ),
-                        );
-                      },
-                      child: Text('USRINFO', style: TextStyle(fontSize: 14)),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(buttonWidth, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PhotoTakingScreen(
-                              onImageSaved: (dynamic image) {
-                                // Handle saved image
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      child: Text(AppLocalizations.of(context)!.next),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(buttonWidth, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    // create for server connection test, the file name is azure_sql_helper.dart
-                    // I need to create here for server connection test
-                    SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Call registerUser() to test the connection
-                        String dbSaveResult = await _azureSqlHelper.registerUser(
-                          email: 'mikelin0502@yahoo.com.tw',
-                          password: 'Password123@',
-                          taboos: 'None',
-                          userName: 'Michael',  
-                          language: 'en-US',  
-                        );
-
-                        bool dbSaveSuccess = dbSaveResult == 'User registered successfully.';
-
-                        // Show result on screen with a Snackbar
-                        if (dbSaveSuccess) {
-                          // Registration successful
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('$dbSaveResult')),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RegistrationPage()),
                           );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Registration failed: $dbSaveResult')),
+                          if (result != null && result is String) {
+                            setState(() {
+                              _nameController.text = result;
+                              _isLoginEnabled = true;
+                            });
+                          }
+                        },
+                        child: Text(AppLocalizations.of(context)!.register),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(buttonWidth, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PhotoTakingScreen(
+                                onImageSaved: (dynamic image) {
+                                  // Handle saved image
+                                },
+                              ),
+                            ),
                           );
-                        }
-                      },
+                        },
+                        child: Text(AppLocalizations.of(context)!.next),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(buttonWidth, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UserInfoPage(userInfo: widget.userInfo),
+                            ),
+                          );
+                        },
+                        child: Text('USRINFO', style: TextStyle(fontSize: 14)),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(buttonWidth, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MenuParsingPage(), // New page for menu parsing
+                            ),
+                          );
+                        },
+                        child: Text('解析菜單', style: TextStyle(fontSize: 14)),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(buttonWidth, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () async {
+                          String dbSaveResult = await _azureSqlHelper.registerUser(
+                            email: 'mikelin0502@yahoo.com.tw',
+                            password: 'Password123@',
+                            taboos: 'None',
+                            userName: 'Michael',
+                            language: 'en-US',
+                          );
+
+                          bool dbSaveSuccess = dbSaveResult == 'User registered successfully.';
+
+                          if (dbSaveSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('$dbSaveResult')));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Registration failed: $dbSaveResult')));
+                          }
+                        },
                         child: Text('SRV', style: TextStyle(fontSize: 14)),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(buttonWidth, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

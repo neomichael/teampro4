@@ -1,11 +1,12 @@
 name: teampro4
-description: "A new Flutter project."
+description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
-
+#environment:
+#  sdk: ^3.5.3
 environment:
-  sdk: ^3.5.3
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -14,18 +15,23 @@ dependencies:
     sdk: flutter
   intl: ^0.19.0  
   image_gallery_saver: ^2.0.3
-  image_picker: ^1.0.7
+  image_picker: ^0.8.4+4
   image: ^4.0.17 
-  path_provider: ^2.0.15
+  path_provider: ^2.0.9
   sqflite: ^2.2.8+4
-  http: ^1.2.2
-
-  # sqljocky5: 2.0.0
+  http: ^0.13.3
+  google_ml_kit: ^0.6.0
   path: any
-  mongo_dart: any
+  shared_preferences: ^2.0.9 # Add the shared_preferences package
+    
 flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/menu-image.jpg
+    - assets/background.jpg
     - lib/l10n/
+
+
+
 

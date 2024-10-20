@@ -76,6 +76,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# lib related
+api_key.dart
+
 # Exclude entire .dart_tool directory
 .dart_tool/
 
