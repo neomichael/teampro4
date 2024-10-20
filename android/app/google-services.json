@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "656889994241",
+    "project_id": "aifoodie-fcdaf",
+    "storage_bucket": "aifoodie-fcdaf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656889994241:android:e601edb559754c6ac63400",
+        "android_client_info": {
+          "package_name": "com.example.teampro4"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTkyFxdNENHVb26elVIXcnj06GkThMpHQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
